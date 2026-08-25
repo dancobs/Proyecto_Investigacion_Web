@@ -3,43 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>[Nombre del tema] — Revista de Investigación</title>
-  <link rel="stylesheet" href="../css/estilos.css">
+  <title>Arquitectura de videojuegos 2D — Revista de Investigación</title>
+  <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
 
   <!-- ============================================================
-       ENCABEZADO — igual que en el formato entrevista
+       ENCABEZADO DE LA REVISTA
        ============================================================ -->
   <header class="revista__header">
     <span class="revista__eyebrow">Investigación · Ingeniería en Sistemas</span>
-    <h1 class="revista__titulo">[Título llamativo de la investigación]</h1>
-    <p class="revista__subtitulo">[Subtítulo: una frase que resuma el tema]</p>
+    <h1 class="revista__titulo">Lo que no se ve en pantalla</h1>
+    <p class="revista__subtitulo">La arquitectura de software detrás de los videojuegos 2D</p>
     <p class="revista__meta">
-      Grupo [XX] · [Nombre del grupo] · Edición [fecha]
+      Grupo 07 · [Nombre del grupo] · Edición agosto 2026
     </p>
   </header>
 
   <main>
 
-    <!-- ============================================================
-         UN SOLO <article class="articulo"> por grupo (a diferencia del
-         formato entrevista, aquí todos los integrantes firman un
-         mismo artículo, como autores).
-         ============================================================ -->
     <article class="articulo">
 
-      <h2 class="articulo__titulo">[Título del artículo — puede repetir o afinar el título de arriba]</h2>
+      <h2 class="articulo__titulo">Arquitectura de software en videojuegos 2D: componentes, patrones y decisiones de diseño</h2>
       <p class="articulo__autores">
-        Por: [Integrante 1], [Integrante 2], [Integrante 3], [Integrante 4]
+        Por: [Integrante 1], [Integrante 2], [Integrante 3], [Integrante 4], [Integrante 5]
       </p>
 
       <!-- Resumen / Abstract -->
       <div class="articulo__resumen">
         <span class="articulo__resumen-titulo">Resumen</span>
         <p>
-          [3-5 líneas que resuman de qué trata la investigación, qué método usaron
-          y a qué conclusión llegaron. Se escribe al final, aunque va primero.]
+          Los videojuegos en dos dimensiones suelen percibirse como productos técnicamente
+          simples frente a sus equivalentes tridimensionales. Esta investigación examina la
+          arquitectura de software que sostiene un juego 2D e identifica cinco componentes
+          determinantes: el bucle principal, el sistema de renderizado, la organización de
+          entidades, la simulación física y la gestión de recursos y estados. A partir de la
+          revisión de documentación oficial de motores y del análisis de proyectos de código
+          abierto, se concluye que la complejidad de un juego 2D no reside en su dimensión
+          visual sino en la coordinación de subsistemas bajo restricciones estrictas de
+          tiempo real.
         </p>
       </div>
 
@@ -47,58 +49,163 @@
            en pantallas grandes y el drop cap automático. No lo quiten. -->
       <div class="articulo__cuerpo">
 
-        <!-- 1. Introducción -->
+        <!-- ============================================================
+             SECCIÓN 1 — Aporte de: [Integrante 1]
+             ============================================================ -->
         <section class="seccion">
           <h3 class="seccion__titulo">1. Introducción</h3>
           <p class="seccion__texto">
-            [Planteamiento del problema o pregunta de investigación. Esta primera
-            sección lleva la letra capital automáticamente, no hay que hacer nada extra.]
+            Existe una intuición extendida, incluso entre estudiantes de programación, según
+            la cual un videojuego 2D es una versión reducida de uno 3D: menos dimensiones,
+            menos cálculo, menos ingeniería. Esa intuición resulta engañosa. Un juego 2D
+            comercial debe procesar la entrada del usuario, actualizar el estado del mundo,
+            resolver colisiones y dibujar la escena completa entre sesenta y ciento veinte
+            veces por segundo, sin fallar una sola vez de forma perceptible. El presupuesto
+            disponible para todo ese trabajo es de aproximadamente dieciséis milisegundos por
+            fotograma. La pregunta que originó esta investigación fue, entonces, la siguiente:
+            si el contenido visual es plano, ¿dónde reside realmente la complejidad de
+            construir un videojuego 2D? Responderla exige mirar la arquitectura del software,
+            no el arte que se muestra en pantalla.
           </p>
         </section>
 
-        <!-- 2. Objetivos e hipótesis -->
+        <!-- ============================================================
+             SECCIÓN 2 — Aporte de: [Integrante 2]
+             ============================================================ -->
         <section class="seccion">
           <h3 class="seccion__titulo">2. Objetivos e hipótesis</h3>
           <p class="seccion__texto">
-            [Qué buscaban lograr y qué esperaban encontrar antes de investigar.]
+            El objetivo general de este trabajo fue identificar y describir los componentes
+            arquitectónicos que estructuran un videojuego 2D, así como los patrones de diseño
+            que los motores actuales emplean para organizarlos. Como objetivos específicos se
+            plantearon tres: delimitar las responsabilidades de cada subsistema, contrastar
+            las soluciones que ofrecen distintos motores ante un mismo problema, y determinar
+            qué decisiones de diseño tienen mayor impacto sobre el rendimiento y la
+            mantenibilidad del proyecto. La hipótesis de partida sostenía que la dificultad
+            central de un juego 2D no proviene de ninguno de sus subsistemas tomado por
+            separado, sino de la sincronización entre ellos dentro de la restricción temporal
+            del fotograma, y que por ello los motores convergerían en soluciones estructurales
+            parecidas aun partiendo de filosofías distintas.
           </p>
         </section>
 
-        <!-- 3. Metodología -->
+        <!-- ============================================================
+             SECCIÓN 3 — Aporte de: [Integrante 3]
+             ============================================================ -->
         <section class="seccion">
           <h3 class="seccion__titulo">3. Metodología</h3>
           <p class="seccion__texto">
-            [Cómo investigaron: fuentes, herramientas, proceso.]
+            La investigación siguió un enfoque documental y comparativo, desarrollado en tres
+            etapas. En la primera se revisó la documentación técnica oficial de tres motores
+            de amplio uso —Godot, Unity y GameMaker—, seleccionados por representar filosofías
+            arquitectónicas diferentes: un árbol de nodos jerárquico, un sistema de componentes
+            sobre un núcleo tridimensional y un motor concebido específicamente para dos
+            dimensiones. En la segunda etapa se contrastó esa documentación con literatura
+            especializada en patrones de diseño aplicados a videojuegos, con el fin de
+            distinguir las decisiones propias de cada producto de aquellas que constituyen
+            soluciones establecidas en la disciplina. La tercera etapa consistió en examinar
+            el código fuente de proyectos de código abierto para verificar cómo se implementan
+            en la práctica los conceptos descritos en la teoría. [Ajusten esta sección con los
+            motores y fuentes que realmente hayan revisado; la rúbrica evalúa que la
+            metodología sea concreta y verificable.]
           </p>
         </section>
 
-        <!-- Cita destacada opcional: rompe las dos columnas automáticamente -->
         <blockquote class="destacado">
-          "[Frase corta y memorable extraída de los hallazgos del grupo]"
+          "La complejidad de un juego 2D no está en lo que se dibuja, sino en todo lo que debe
+          ocurrir antes de poder dibujarlo."
         </blockquote>
 
-        <!-- 4. Resultados -->
+        <!-- ============================================================
+             SECCIÓN 4 — Aporte de: [Integrante 4]
+             Los cinco subtemas del grupo se desarrollan aquí.
+             ============================================================ -->
         <section class="seccion">
           <h3 class="seccion__titulo">4. Resultados</h3>
           <p class="seccion__texto">
-            [Qué encontraron. Puede incluir datos, comparaciones, hallazgos clave.]
+            El análisis permitió identificar cinco componentes presentes, con distintos
+            nombres, en todas las arquitecturas examinadas. El primero es el bucle principal
+            o game loop, estructura que se repite indefinidamente ejecutando tres fases:
+            procesar la entrada del usuario, actualizar el estado del mundo y renderizar el
+            resultado. Su elemento crítico es el delta time, la medida del tiempo transcurrido
+            entre fotogramas, que permite que la simulación avance a la misma velocidad
+            independientemente del rendimiento del equipo. Sin él, un personaje se desplazaría
+            al doble de velocidad en una máquina que duplica los fotogramas por segundo.
+          </p>
+          <p class="seccion__texto">
+            El segundo componente es el sistema de renderizado. Contra lo que sugiere el
+            término «2D», los motores modernos delegan el dibujado en la unidad de
+            procesamiento gráfico igual que un juego tridimensional, con la diferencia de que
+            las superficies dibujadas son planas. Las técnicas que sostienen el rendimiento
+            son el agrupamiento de sprites en pocas llamadas de dibujado, el uso de atlas de
+            texturas que reducen los cambios de estado en la tarjeta gráfica, y una cámara
+            entendida como transformación matemática que define qué porción del mundo resulta
+            visible y habilita efectos como el desplazamiento por capas.
+          </p>
+          <p class="seccion__texto">
+            El tercer componente concierne a la organización de las entidades del juego. La
+            herencia clásica, en la que un jugador desciende de un personaje que a su vez
+            desciende de una entidad genérica, se vuelve rígida conforme el proyecto crece: la
+            aparición de un objeto que no encaja en la jerarquía obliga a reestructurarla. El
+            patrón Entidad-Componente-Sistema propone una alternativa basada en composición,
+            donde la entidad es un identificador sin lógica, los componentes son datos puros y
+            los sistemas contienen el comportamiento que opera sobre todas las entidades que
+            posean determinada combinación de componentes. Además de la flexibilidad, este
+            enfoque mejora el rendimiento por la forma en que organiza los datos en memoria.
+          </p>
+          <p class="seccion__texto">
+            El cuarto componente es la simulación física y la detección de colisiones,
+            resuelta habitualmente en dos fases. Una fase amplia descarta con operaciones
+            baratas los pares de objetos que no pueden estar colisionando, y una fase estrecha
+            calcula con precisión la intersección de los pares restantes. La mayoría de los
+            proyectos delega esta tarea en motores especializados como Box2D en lugar de
+            implementarla desde cero, decisión que reduce el riesgo pero cede control sobre el
+            comportamiento fino del movimiento, algo relevante en géneros donde la sensación
+            de control es determinante.
+          </p>
+          <p class="seccion__texto">
+            El quinto componente agrupa la gestión de recursos y de estados. Los recursos
+            —imágenes, sonidos, mapas, tipografías— se cargan de forma asíncrona para evitar
+            que el juego se detenga durante la lectura de disco, se almacenan en caché para no
+            duplicar memoria y se transfieren por zonas en los mundos extensos. Los estados,
+            por su parte, se organizan mediante una máquina que gobierna las transiciones
+            entre menú, nivel, pausa y pantallas de cierre, frecuentemente apilables, de modo
+            que una pausa pueda superponerse al nivel sin destruirlo.
           </p>
         </section>
 
-        <!-- 5. Discusión y conclusión -->
+        <!-- ============================================================
+             SECCIÓN 5 — Aporte de: [Integrante 5]
+             ============================================================ -->
         <section class="seccion">
           <h3 class="seccion__titulo">5. Discusión y conclusión</h3>
           <p class="seccion__texto">
-            [Qué significan los resultados, y su conclusión o propuesta de solución.]
+            Los resultados confirman la hipótesis planteada. Ninguno de los cinco componentes
+            resulta especialmente difícil considerado de forma aislada; la dificultad emerge
+            de su interdependencia bajo una restricción temporal estricta, donde una decisión
+            tomada en el sistema de renderizado repercute sobre el presupuesto disponible para
+            la física, y la organización de las entidades condiciona qué tan costoso será
+            recorrerlas cada fotograma. La convergencia observada entre motores de filosofías
+            distintas sugiere que estos componentes no son convenciones arbitrarias sino
+            respuestas maduras a problemas estructurales del dominio. De ello se desprende una
+            implicación práctica para quien inicia un proyecto: la elección del motor importa
+            menos que comprender qué problema resuelve cada subsistema, porque esa comprensión
+            es lo que permite diagnosticar un fallo de rendimiento o extender el juego sin
+            reescribirlo. Como línea de trabajo futura, resultaría valioso complementar este
+            análisis documental con mediciones sobre una misma implementación construida en
+            los tres motores estudiados.
           </p>
         </section>
 
-        <!-- 6. Referencias -->
+        <!-- ============================================================
+             REFERENCIAS — completar con las fuentes realmente consultadas
+             ============================================================ -->
         <section class="seccion">
           <h3 class="seccion__titulo">6. Referencias</h3>
           <ol class="referencias">
-            <li>[Autor, A. (Año). Título de la fuente. Editorial/Sitio.]</li>
-            <li>[Autor, B. (Año). Título de la fuente. Editorial/Sitio.]</li>
+            <li>[Autor, A. (Año). Título de la fuente. Editorial o sitio web.]</li>
+            <li>[Autor, B. (Año). Título de la fuente. Editorial o sitio web.]</li>
+            <li>[Autor, C. (Año). Título de la fuente. Editorial o sitio web.]</li>
           </ol>
         </section>
 
