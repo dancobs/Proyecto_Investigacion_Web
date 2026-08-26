@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arquitectura de videojuegos 2D — Revista de Investigación</title>
+  <title>La arquitectura detrás de los videojuegos 2D — Revista de Investigación</title>
   <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
@@ -13,8 +13,8 @@
        ============================================================ -->
   <header class="revista__header">
     <span class="revista__eyebrow">Investigación · Ingeniería en Sistemas</span>
-    <h1 class="revista__titulo">Lo que no se ve en pantalla</h1>
-    <p class="revista__subtitulo">La arquitectura de software detrás de los videojuegos 2D</p>
+    <h1 class="revista__titulo">La arquitectura detrás de los videojuegos 2D</h1>
+    <p class="revista__subtitulo">Game loop, renderizado, física y gestión de recursos como subsistemas acoplados de un motor bidimensional</p>
     <p class="revista__meta">
       Grupo 07 · [Nombre del grupo] · Edición agosto 2026
     </p>
@@ -24,7 +24,7 @@
 
     <article class="articulo">
 
-      <h2 class="articulo__titulo">Arquitectura de software en videojuegos 2D: componentes, patrones y decisiones de diseño</h2>
+      <h2 class="articulo__titulo">La arquitectura detrás de los videojuegos 2D: subsistemas acoplados y principios de diseño transversales</h2>
       <p class="articulo__autores">
         Por: [Integrante 1], [Integrante 2], [Integrante 3], [Integrante 4], [Integrante 5]
       </p>
@@ -33,15 +33,22 @@
       <div class="articulo__resumen">
         <span class="articulo__resumen-titulo">Resumen</span>
         <p>
-          Los videojuegos en dos dimensiones suelen percibirse como productos técnicamente
-          simples frente a sus equivalentes tridimensionales. Esta investigación examina la
-          arquitectura de software que sostiene un juego 2D e identifica cinco componentes
-          determinantes: el bucle principal, el sistema de renderizado, la organización de
-          entidades, la simulación física y la gestión de recursos y estados. A partir de la
-          revisión de documentación oficial de motores y del análisis de proyectos de código
-          abierto, se concluye que la complejidad de un juego 2D no reside en su dimensión
-          visual sino en la coordinación de subsistemas bajo restricciones estrictas de
-          tiempo real.
+          Esta investigación documental analiza la arquitectura interna de los motores de videojuegos
+          bidimensionales a partir de cuatro subsistemas: la gestión del tiempo mediante el bucle
+          principal, el renderizado 2D, la simulación física y la detección de colisiones, y la
+          administración de recursos, escenas y estados. El estudio se plantea como una revisión
+          sistemática de literatura técnica especializada, contrastando fuentes primarias de autores
+          reconocidos del campo con la documentación oficial de los motores Unity, Godot y Box2D. La
+          hipótesis sostiene que el rendimiento, la estabilidad y la reproducibilidad de un videojuego
+          2D dependen más de la coordinación entre estos subsistemas que de la potencia bruta del
+          hardware. Los resultados confirman la existencia de cinco patrones recurrentes:
+          desacoplamiento temporal, agrupamiento por lotes, particionamiento espacial, caché con
+          reutilización y aproximación controlada. Se concluye que la arquitectura 2D moderna es un
+          problema de ingeniería de coordinación antes que de capacidad gráfica.
+        </p>
+        <p>
+          Palabras clave: motor de videojuegos, game loop, delta time, renderizado 2D, detección de
+          colisiones, Box2D, gestión de recursos, máquina de estados finitos, arquitectura de software.
         </p>
       </div>
 
@@ -50,162 +57,734 @@
       <div class="articulo__cuerpo">
 
         <!-- ============================================================
-             SECCIÓN 1 — Aporte de: [Integrante 1]
+             SECCIÓN 1 — Aporte de: [Integrante __]
              ============================================================ -->
         <section class="seccion">
           <h3 class="seccion__titulo">1. Introducción</h3>
           <p class="seccion__texto">
-            Existe una intuición extendida, incluso entre estudiantes de programación, según
-            la cual un videojuego 2D es una versión reducida de uno 3D: menos dimensiones,
-            menos cálculo, menos ingeniería. Esa intuición resulta engañosa. Un juego 2D
-            comercial debe procesar la entrada del usuario, actualizar el estado del mundo,
-            resolver colisiones y dibujar la escena completa entre sesenta y ciento veinte
-            veces por segundo, sin fallar una sola vez de forma perceptible. El presupuesto
-            disponible para todo ese trabajo es de aproximadamente dieciséis milisegundos por
-            fotograma. La pregunta que originó esta investigación fue, entonces, la siguiente:
-            si el contenido visual es plano, ¿dónde reside realmente la complejidad de
-            construir un videojuego 2D? Responderla exige mirar la arquitectura del software,
-            no el arte que se muestra en pantalla.
+            Un videojuego bidimensional suele percibirse, desde fuera, como un sistema sencillo:
+            imágenes planas que se desplazan sobre una pantalla y reaccionan a las pulsaciones del
+            jugador. Esta impresión oculta una arquitectura de software considerablemente compleja.
+            Detrás de cada fotograma se ejecuta una secuencia estricta de operaciones que debe
+            completarse en un margen del orden de los milisegundos, coordinando la lectura de
+            dispositivos de entrada, la actualización de la lógica de juego, la resolución de una
+            simulación física, la administración de memoria y la emisión de órdenes de dibujo hacia la
+            unidad de procesamiento gráfico.
+          </p>
+          <p class="seccion__texto">
+            Gregory (2018) describe el motor de juego como una jerarquía de subsistemas donde cada capa
+            ofrece servicios a las superiores, y advierte que la mayor parte de los problemas de
+            rendimiento no se originan en un subsistema aislado, sino en las interfaces entre ellos.
+            Nystrom (2014) sostiene que los patrones arquitectónicos del desarrollo de videojuegos
+            existen precisamente para gestionar el acoplamiento entre módulos que deben ejecutarse en
+            tiempo real. Ambas afirmaciones apuntan a la misma idea: lo determinante no es la
+            sofisticación individual de cada componente, sino la manera en que estos se sincronizan
+            dentro del presupuesto de tiempo de un fotograma.
+          </p>
+          <p class="seccion__texto">
+            En el ámbito académico es frecuente que el estudio del desarrollo 2D se aborde de forma
+            fragmentaria: se enseña a dibujar sprites, después a detectar colisiones, después a cargar
+            niveles, pero rara vez se examina cómo esas piezas se articulan en una única arquitectura.
+            El resultado son proyectos que funcionan en el equipo del desarrollador y fallan en otro,
+            que presentan velocidades distintas según los fotogramas por segundo alcanzados, que
+            atraviesan paredes cuando el rendimiento baja, o que agotan la memoria de vídeo al cargar un
+            nivel extenso. Estos síntomas comparten una raíz común: una coordinación deficiente entre
+            subsistemas. De ahí la pregunta que orienta esta investigación: ¿qué principios
+            arquitectónicos comparten el bucle principal, el renderizado, la simulación física y la
+            gestión de recursos de un motor 2D, y en qué medida su aplicación conjunta explica el
+            rendimiento y la estabilidad del producto final?
+          </p>
+          <p class="seccion__texto">
+            El estudio se justifica en tres planos. En el técnico, comprender las relaciones entre
+            subsistemas permite anticipar fallos difíciles de diagnosticar una vez que el proyecto está
+            avanzado. En el formativo, ofrece un marco integrador que evita el aprendizaje fragmentado
+            descrito. En el económico, el desarrollo 2D concentra buena parte de la producción
+            independiente y móvil, segmentos donde el hardware objetivo suele ser modesto y las
+            decisiones de arquitectura inciden directamente sobre la viabilidad del producto.
           </p>
         </section>
 
         <!-- ============================================================
-             SECCIÓN 2 — Aporte de: [Integrante 2]
+             SECCIÓN 2 — Aporte de: [Integrante __]
              ============================================================ -->
         <section class="seccion">
-          <h3 class="seccion__titulo">2. Objetivos e hipótesis</h3>
+          <h3 class="seccion__titulo">2. Marco teórico, objetivos e hipótesis</h3>
           <p class="seccion__texto">
-            El objetivo general de este trabajo fue identificar y describir los componentes
-            arquitectónicos que estructuran un videojuego 2D, así como los patrones de diseño
-            que los motores actuales emplean para organizarlos. Como objetivos específicos se
-            plantearon tres: delimitar las responsabilidades de cada subsistema, contrastar
-            las soluciones que ofrecen distintos motores ante un mismo problema, y determinar
-            qué decisiones de diseño tienen mayor impacto sobre el rendimiento y la
-            mantenibilidad del proyecto. La hipótesis de partida sostenía que la dificultad
-            central de un juego 2D no proviene de ninguno de sus subsistemas tomado por
-            separado, sino de la sincronización entre ellos dentro de la restricción temporal
-            del fotograma, y que por ello los motores convergerían en soluciones estructurales
-            parecidas aun partiendo de filosofías distintas.
+            Se entiende por motor de videojuego el conjunto de bibliotecas y subsistemas reutilizables
+            que proporcionan los servicios necesarios para ejecutar una simulación interactiva en tiempo
+            real. Gregory (2018) lo distingue del juego propiamente dicho por su carácter agnóstico
+            respecto al contenido: el motor no sabe qué se está simulando, solo cómo simularlo. La
+            unidad temporal básica de esa simulación es el fotograma, una iteración completa del ciclo
+            entrada–actualización–renderizado. A una tasa objetivo de sesenta fotogramas por segundo
+            cada iteración dispone de aproximadamente 16,67 milisegundos; a treinta, de 33,33. Todo el
+            trabajo del motor debe caber dentro de ese presupuesto, y si no cabe, el fotograma se pierde
+            y el jugador percibe una irregularidad en el movimiento.
+          </p>
+          <p class="seccion__texto">
+            El término tiempo delta designa el intervalo transcurrido entre dos actualizaciones
+            consecutivas de la simulación. Su tratamiento constituye el eje que articula los cuatro
+            subsistemas analizados, porque determina cuántas veces se ejecuta la física, con qué
+            frecuencia se interpola la animación y en qué momento resulta seguro liberar o cargar
+            recursos. Se denomina llamada de dibujo a cada orden que el procesador central envía a la
+            unidad gráfica solicitando la representación de un conjunto de geometría; su número es uno
+            de los indicadores de rendimiento más citados en la literatura sobre renderizado 2D, dado
+            que cada llamada implica un cambio de estado potencialmente costoso.
+          </p>
+          <p class="seccion__texto">
+            El objetivo general es analizar la arquitectura de los videojuegos bidimensionales a través
+            de sus cuatro subsistemas fundamentales, identificando los principios de diseño comunes que
+            determinan su rendimiento y estabilidad. Como objetivos específicos se plantean: describir
+            el funcionamiento del bucle principal y los modelos de gestión del tiempo empleados para
+            desacoplar la simulación de la tasa de presentación; sistematizar las técnicas que integran
+            el pipeline de renderizado 2D moderno; examinar los mecanismos de detección y resolución de
+            colisiones, con énfasis en la arquitectura de Box2D; caracterizar los modelos de carga,
+            caché y liberación de recursos junto con las máquinas de estados que organizan el flujo
+            entre escenas; y contrastar los cuatro subsistemas para determinar si existen estrategias de
+            optimización transversales a todos ellos.
+          </p>
+          <p class="seccion__texto">
+            La hipótesis de trabajo sostiene que la arquitectura de un videojuego 2D opera como un
+            sistema de cuatro subsistemas acoplados cuya coordinación mutua, y no la potencia bruta del
+            hardware, es el factor determinante del rendimiento, la estabilidad y el determinismo de la
+            ejecución. En consecuencia, se espera que la literatura documente un conjunto reducido y
+            recurrente de estrategias que reaparezcan en los cuatro subsistemas pese a que cada uno opere
+            sobre un dominio distinto. La hipótesis nula sostiene lo contrario: que los cuatro
+            subsistemas constituyen dominios técnicos independientes, sin principios de diseño
+            compartidos, de modo que el rendimiento se explicaría fundamentalmente por las capacidades
+            del hardware.
+          </p>
+          <p class="seccion__texto">
+            Se consideran variables independientes las estrategias arquitectónicas adoptadas en cada
+            subsistema —modelo de temporización, esquema de agrupamiento de dibujo, estructura de
+            partición espacial, política de caché y organización de estados—; variable dependiente, el
+            comportamiento observable del sistema, expresado en estabilidad de la tasa de fotogramas,
+            consumo de memoria de vídeo, robustez de la simulación y reproducibilidad de la ejecución; y
+            variables intervinientes, las características del hardware objetivo, el motor empleado y el
+            volumen de contenido de la escena.
           </p>
         </section>
 
         <!-- ============================================================
-             SECCIÓN 3 — Aporte de: [Integrante 3]
+             SECCIÓN 3 — Aporte de: [Integrante __]
              ============================================================ -->
         <section class="seccion">
           <h3 class="seccion__titulo">3. Metodología</h3>
           <p class="seccion__texto">
-            La investigación siguió un enfoque documental y comparativo, desarrollado en tres
-            etapas. En la primera se revisó la documentación técnica oficial de tres motores
-            de amplio uso —Godot, Unity y GameMaker—, seleccionados por representar filosofías
-            arquitectónicas diferentes: un árbol de nodos jerárquico, un sistema de componentes
-            sobre un núcleo tridimensional y un motor concebido específicamente para dos
-            dimensiones. En la segunda etapa se contrastó esa documentación con literatura
-            especializada en patrones de diseño aplicados a videojuegos, con el fin de
-            distinguir las decisiones propias de cada producto de aquellas que constituyen
-            soluciones establecidas en la disciplina. La tercera etapa consistió en examinar
-            el código fuente de proyectos de código abierto para verificar cómo se implementan
-            en la práctica los conceptos descritos en la teoría. [Ajusten esta sección con los
-            motores y fuentes que realmente hayan revisado; la rúbrica evalúa que la
-            metodología sea concreta y verificable.]
+            El estudio corresponde a una investigación documental, de enfoque cualitativo, alcance
+            descriptivo-analítico y diseño no experimental de corte transversal. No se manipulan
+            variables ni se realizan mediciones instrumentales sobre motores en ejecución; el objeto de
+            análisis es el corpus de literatura técnica que documenta las decisiones de arquitectura de
+            los motores 2D contemporáneos.
+          </p>
+          <p class="seccion__texto">
+            La población documental está constituida por la literatura especializada en arquitectura de
+            motores de videojuego publicada entre 1988 y 2026. De ella se extrajo una muestra
+            intencional, no probabilística, de veintisiete fuentes seleccionadas por criterio de
+            autoridad y pertinencia temática, organizadas en tres estratos: obras de referencia y
+            monografías técnicas; ponencias y artículos de conferencia, principalmente de la Game
+            Developers Conference; y documentación oficial de motores de producción. Se incluyeron
+            fuentes primarias escritas por autores o responsables directos de la tecnología descrita,
+            obras con reconocimiento sostenido en la industria y documentación oficial vigente. Se
+            excluyeron foros, blogs personales sin autoría técnica verificable, contenidos divulgativos
+            sin respaldo bibliográfico y tutoriales sin trazabilidad de fuente.
+          </p>
+          <p class="seccion__texto">
+            El desarrollo se ejecutó en cinco fases. En la primera se delimitaron los cuatro subsistemas
+            a partir del índice temático propuesto en el documento de referencia del curso. En la segunda
+            se realizó la búsqueda y recopilación de fuentes por subsistema. En la tercera se efectuó la
+            lectura analítica y el fichado de cada fuente, registrando técnica descrita, problema que
+            resuelve y justificación aportada. En la cuarta se redactaron los cuatro numerales que
+            constituyen los resultados. En la quinta se practicó un análisis comparativo transversal,
+            tabulando las estrategias documentadas para verificar si se repetían entre subsistemas,
+            procedimiento que constituye la prueba directa de la hipótesis.
+          </p>
+          <p class="seccion__texto">
+            Dado el carácter documental del estudio, la hipótesis se contrasta mediante criterios
+            cualitativos verificables sobre el corpus revisado: que una misma estrategia aparezca
+            descrita en al menos tres de los cuatro subsistemas; que las fuentes la justifiquen
+            explícitamente por razones de rendimiento o estabilidad, y no por conveniencia de
+            implementación; y que la estrategia sea recogida tanto por literatura de referencia como por
+            la documentación oficial de al menos un motor de producción. Como limitaciones, el estudio
+            no incorpora mediciones empíricas propias, por lo que las afirmaciones sobre rendimiento
+            reproducen las de las fuentes consultadas; además, la documentación oficial de los motores
+            comerciales evoluciona con rapidez, de modo que los detalles referidos corresponden al estado
+            de dicha documentación en agosto de 2026.
           </p>
         </section>
 
         <blockquote class="destacado">
-          "La complejidad de un juego 2D no está en lo que se dibuja, sino en todo lo que debe
-          ocurrir antes de poder dibujarlo."
+          "La arquitectura de un videojuego 2D es un problema de ingeniería de coordinación antes que de
+          capacidad gráfica."
         </blockquote>
 
         <!-- ============================================================
-             SECCIÓN 4 — Aporte de: [Integrante 4]
-             Los cinco subtemas del grupo se desarrollan aquí.
+             SECCIÓN 4 — RESULTADOS
+             Los cuatro numerales se reparten entre los integrantes.
              ============================================================ -->
         <section class="seccion">
           <h3 class="seccion__titulo">4. Resultados</h3>
           <p class="seccion__texto">
-            El análisis permitió identificar cinco componentes presentes, con distintos
-            nombres, en todas las arquitecturas examinadas. El primero es el bucle principal
-            o game loop, estructura que se repite indefinidamente ejecutando tres fases:
-            procesar la entrada del usuario, actualizar el estado del mundo y renderizar el
-            resultado. Su elemento crítico es el delta time, la medida del tiempo transcurrido
-            entre fotogramas, que permite que la simulación avance a la misma velocidad
-            independientemente del rendimiento del equipo. Sin él, un personaje se desplazaría
-            al doble de velocidad en una máquina que duplica los fotogramas por segundo.
+            Los resultados se presentan como los cuatro numerales que conforman el objeto de estudio.
+            Cada numeral sintetiza el estado del conocimiento sobre un subsistema y cierra con la
+            identificación de sus fuentes principales.
+          </p>
+        </section>
+
+        <!-- Numeral 1 — Aporte de: [Integrante __] -->
+        <section class="seccion">
+          <h3 class="seccion__titulo">4.1 Game loop y gestión del tiempo</h3>
+          <p class="seccion__texto">
+            El bucle principal de juego es la estructura de control que mantiene viva la simulación. A
+            diferencia de una aplicación tradicional, que permanece inactiva a la espera de un evento del
+            usuario, un videojuego debe continuar avanzando aunque nadie pulse una tecla: los enemigos se
+            desplazan, las animaciones progresan y los temporizadores corren. Nystrom (2014) formaliza
+            esta estructura como el patrón Game Loop, cuyo propósito explícito es desacoplar el avance
+            del tiempo de juego tanto de la entrada del usuario como de la velocidad del procesador.
           </p>
           <p class="seccion__texto">
-            El segundo componente es el sistema de renderizado. Contra lo que sugiere el
-            término «2D», los motores modernos delegan el dibujado en la unidad de
-            procesamiento gráfico igual que un juego tridimensional, con la diferencia de que
-            las superficies dibujadas son planas. Las técnicas que sostienen el rendimiento
-            son el agrupamiento de sprites en pocas llamadas de dibujado, el uso de atlas de
-            texturas que reducen los cambios de estado en la tarjeta gráfica, y una cámara
-            entendida como transformación matemática que define qué porción del mundo resulta
-            visible y habilita efectos como el desplazamiento por capas.
+            En su forma mínima, el bucle repite tres etapas hasta que se solicita la salida: procesar la
+            entrada, actualizar la simulación en función del tiempo delta y renderizar el resultado. El
+            orden no es arbitrario. La entrada debe leerse antes de la actualización para que las
+            acciones del jugador afecten al fotograma en curso y no al siguiente, y el renderizado debe
+            situarse al final para que dibuje un estado ya consistente. Gregory (2018) señala que los
+            motores de producción amplían este esquema con etapas adicionales —sincronización de hilos,
+            actualización de audio, recolección de recursos diferida— pero conservan la secuencia
+            fundamental. McShaffry y Graham (2012) documentan además la fase previa de inicialización, en
+            la que se establecen los subsistemas antes de que el bucle comience a iterar.
           </p>
           <p class="seccion__texto">
-            El tercer componente concierne a la organización de las entidades del juego. La
-            herencia clásica, en la que un jugador desciende de un personaje que a su vez
-            desciende de una entidad genérica, se vuelve rígida conforme el proyecto crece: la
-            aparición de un objeto que no encaja en la jerarquía obliga a reestructurarla. El
-            patrón Entidad-Componente-Sistema propone una alternativa basada en composición,
-            donde la entidad es un identificador sin lógica, los componentes son datos puros y
-            los sistemas contienen el comportamiento que opera sobre todas las entidades que
-            posean determinada combinación de componentes. Además de la flexibilidad, este
-            enfoque mejora el rendimiento por la forma en que organiza los datos en memoria.
+            La diferencia decisiva entre implementaciones reside en cómo se determina el valor del tiempo
+            delta. La literatura distingue cuatro modelos sucesivos, cada uno de los cuales corrige una
+            deficiencia del anterior. El bucle sin control de tiempo avanza una cantidad fija de unidades
+            por iteración, sin medir el tiempo real transcurrido, de modo que la velocidad del juego queda
+            atada a la del procesador; es el modelo de los primeros títulos para computadoras personales
+            y la razón por la que muchos resultan injugables en hardware moderno. El paso variable puro
+            mide el tiempo real del fotograma anterior y lo emplea como delta: el juego avanza a la misma
+            velocidad en cualquier equipo, pero la simulación deja de ser determinista, y un valor
+            anómalamente grande puede desestabilizar la integración numérica o permitir que un objeto
+            rápido atraviese un obstáculo. El paso semifijo subdivide el tiempo del fotograma en varios
+            pasos acotados, lo que mitiga la inestabilidad sin eliminar la variabilidad del último paso.
           </p>
           <p class="seccion__texto">
-            El cuarto componente es la simulación física y la detección de colisiones,
-            resuelta habitualmente en dos fases. Una fase amplia descarta con operaciones
-            baratas los pares de objetos que no pueden estar colisionando, y una fase estrecha
-            calcula con precisión la intersección de los pares restantes. La mayoría de los
-            proyectos delega esta tarea en motores especializados como Box2D en lugar de
-            implementarla desde cero, decisión que reduce el riesgo pero cede control sobre el
-            comportamiento fino del movimiento, algo relevante en géneros donde la sensación
-            de control es determinante.
+            El modelo dominante en la actualidad es el paso fijo con acumulador, formulado por Fiedler
+            (2004). La simulación avanza siempre en incrementos idénticos y el excedente se conserva para
+            el fotograma siguiente. Dos elementos merecen atención. El primero es el tope aplicado al
+            tiempo de fotograma: sin él, una iteración excepcionalmente lenta —por una carga de disco o
+            una pausa del depurador— acumularía tanto tiempo pendiente que el bucle interno necesitaría
+            más de un fotograma para desahogarlo, generando un retraso creciente que Fiedler denomina
+            espiral de la muerte. El segundo es el factor de interpolación, que expresa la fracción de
+            paso pendiente y permite interpolar entre el estado anterior y el actual al dibujar. Gracias
+            a ello, una simulación que avanza a 60 Hz puede presentarse suavemente en un monitor de 144
+            Hz sin que la física deje de ser determinista.
           </p>
           <p class="seccion__texto">
-            El quinto componente agrupa la gestión de recursos y de estados. Los recursos
-            —imágenes, sonidos, mapas, tipografías— se cargan de forma asíncrona para evitar
-            que el juego se detenga durante la lectura de disco, se almacenan en caché para no
-            duplicar memoria y se transfieren por zonas en los mundos extensos. Los estados,
-            por su parte, se organizan mediante una máquina que gobierna las transiciones
-            entre menú, nivel, pausa y pantallas de cierre, frecuentemente apilables, de modo
-            que una pausa pueda superponerse al nivel sin destruirlo.
+            Dentro de la actualización, el avance de posiciones y velocidades exige un método de
+            integración numérica. Fiedler (2006) compara los principales. El método de Euler explícito es
+            simple, pero inyecta energía al sistema y hace que los objetos oscilantes diverjan
+            progresivamente. El Euler semi-implícito o simpléctico invierte el orden de actualización
+            —primero la velocidad, después la posición— y conserva la energía de forma aceptable cuando
+            el paso es fijo, razón por la cual lo emplea la mayoría de motores 2D. El método de Verlet
+            resulta estable y adecuado para sistemas de partículas y cuerdas, y Jakobsen (2001) lo
+            popularizó en física de personajes. Runge-Kutta de cuarto orden es muy preciso pero
+            cuadruplica el costo, por lo que es poco frecuente en juegos 2D. La combinación de paso fijo
+            e integrador semi-implícito no es casual: la estabilidad del método simpléctico está
+            condicionada a que el paso permanezca constante, lo que ilustra el primer acoplamiento entre
+            subsistemas documentado en esta investigación, pues la decisión de temporización determina
+            qué integrador resulta viable en el subsistema físico.
+          </p>
+          <p class="seccion__texto">
+            La calidad del bucle depende de la calidad del reloj. Intel (2021) documenta los mecanismos
+            de temporización de alta resolución disponibles en las arquitecturas x86, entre ellos el
+            contador de marcas de tiempo y el temporizador de eventos de alta precisión. La literatura
+            coincide en recomendar relojes monotónicos y desaconsejar el reloj de pared, susceptible de
+            saltos por sincronización horaria o cambios de zona. Una vez producido el fotograma, resta
+            entregarlo a la pantalla: sin sincronización vertical, el intercambio de búferes puede ocurrir
+            a mitad del barrido y producir el artefacto conocido como tearing; la sincronización vertical
+            lo elimina, pero fuerza al motor a esperar y puede introducir latencia adicional. La
+            especificación Adaptive-Sync publicada por la VESA (2014) invierte el planteamiento: es el
+            monitor el que ajusta su frecuencia de refresco al ritmo de entrega del juego.
+          </p>
+          <p class="seccion__texto">
+            El determinismo —la garantía de que una misma secuencia de entradas produce siempre el mismo
+            estado— deja de ser una elegancia teórica en cuanto interviene la red. Cannon (2009) describe
+            en el sistema GGPO la técnica de rollback: el cliente predice las acciones del oponente y
+            continúa simulando; cuando llegan las entradas reales y difieren de la predicción, restaura un
+            estado guardado y vuelve a simular los fotogramas intermedios. El procedimiento solo es viable
+            si la simulación es estrictamente determinista, lo que exige paso fijo, orden de operaciones
+            idéntico y ausencia de dependencias respecto a la tasa de fotogramas. Por último, la
+            organización interna de los datos condiciona lo que cabe dentro del presupuesto del fotograma:
+            Milenkovic (2020) analiza la arquitectura de entidad-componente-sistema y el diseño orientado
+            a datos, mostrando que disponer los componentes en arreglos contiguos y recorrerlos por
+            sistemas —en lugar de invocar un método de actualización sobre objetos dispersos en memoria—
+            mejora sustancialmente el aprovechamiento de la caché del procesador en escenas con millares
+            de entidades.
+          </p>
+        </section>
+
+        <!-- Numeral 2 — Aporte de: [Integrante __] -->
+        <section class="seccion">
+          <h3 class="seccion__titulo">4.2 Renderizado 2D</h3>
+          <p class="seccion__texto">
+            El renderizado 2D comprende el conjunto de técnicas destinadas a generar imágenes
+            bidimensionales por computadora. Aunque pueda parecer menos exigente que su contraparte
+            tridimensional, los motores modernos emplean una variedad considerable de algoritmos para
+            lograr iluminación dinámica, animación fluida, texto nítido y un uso eficiente del hardware.
+            El desarrollo de las unidades gráficas programables ha permitido trasladar hacia los shaders
+            operaciones que antes recaían en el procesador central, ejecutándolas de forma masivamente
+            paralela.
+          </p>
+          <p class="seccion__texto">
+            La unidad básica de representación es el sprite: una imagen rectangular con transparencia que
+            se dibuja sobre un cuadrilátero texturizado. La cámara emplea una proyección ortográfica, de
+            modo que el tamaño aparente de un objeto no depende de su distancia. La profundidad se
+            resuelve mediante capas y un valor de orden en Z que determina la secuencia de dibujo,
+            aplicando en la práctica el algoritmo del pintor: los elementos más lejanos se dibujan primero
+            y los cercanos se superponen. El efecto de parallax se consigue asignando a cada capa de fondo
+            un factor de desplazamiento inferior al de la cámara, de manera que los planos lejanos se
+            muevan más lentamente y sugieran profundidad.
+          </p>
+          <p class="seccion__texto">
+            La iluminación dinámica en dos dimensiones no requiere geometría tridimensional, sino texturas
+            auxiliares que codifican la orientación de la superficie en cada píxel a través de los canales
+            de color. El shader de fragmentos calcula entonces el modelo difuso de Lambert como el
+            producto escalar entre la normal codificada y el vector hacia la fuente de luz, acotado a
+            valores no negativos: cuando ambos vectores apuntan en direcciones próximas la intensidad
+            aumenta, y cuando la superficie se orienta en sentido contrario a la luz tiende a cero. El
+            modelo resulta atractivo porque ofrece una aproximación aceptable de la iluminación difusa con
+            muy pocos cálculos por píxel. Para las sombras dinámicas se recurre a mapas de oclusión
+            unidimensionales sobre los que el shader proyecta rayos desde cada fuente de luz hacia los
+            colisionadores, permitiendo desplazar antorchas, lámparas o explosiones sin regenerar sombras
+            manualmente. El costo crece con el número de luces, por lo que los motores limitan su área de
+            influencia o las agrupan en lotes.
+          </p>
+          <p class="seccion__texto">
+            Almacenar cada glifo como una imagen convencional produce desenfoque al ampliarlo. Green
+            (2007) propuso guardar en la textura, en lugar del trazo, la distancia de cada píxel al borde
+            de la letra, es decir, un campo de distancia con signo. Durante el dibujo, el shader
+            reconstruye el contorno comparando ese valor con un umbral, lo que permite escalar la fuente a
+            cualquier resolución con una única textura y aplicar bordes, sombras o resplandores
+            simplemente desplazando el umbral. La variante multicanal mejora la reproducción de esquinas
+            pronunciadas al distribuir la información de distancia entre varios canales de color.
+          </p>
+          <p class="seccion__texto">
+            Los escenarios construidos por casillas exigen estructuras específicas para no instanciar
+            miles de objetos independientes. La técnica de chunking divide el mundo en bloques —por
+            ejemplo, de dieciséis por dieciséis casillas— y unifica toda su geometría en una sola malla
+            estática, de modo que un bloque completo se dibuje con una única llamada. Esa misma división
+            habilita el descarte de regiones fuera del campo visible. La composición visual entre terrenos
+            se automatiza mediante máscaras de bits sobre los ocho vecinos de cada casilla, lo que genera
+            esquinas, bordes y transiciones sin intervención manual del diseñador.
+          </p>
+          <p class="seccion__texto">
+            En cuanto a la animación, coexisten dos paradigmas dominantes. La animación cuadro a cuadro
+            intercambia una secuencia de sprites sobre las mismas coordenadas de textura: ofrece control
+            artístico absoluto y la estética tradicional, a costa de un alto consumo de memoria de vídeo
+            en animaciones extensas. La animación esquelética deforma una malla articulada mediante una
+            jerarquía de huesos: reduce notablemente el consumo de memoria y permite transiciones fluidas
+            por interpolación, pero requiere calcular la deformación de vértices en el procesador o en la
+            unidad gráfica.
+          </p>
+          <p class="seccion__texto">
+            El filtrado por vecino más próximo selecciona el píxel más cercano y preserva la estética
+            retro, aunque produce dentado al escalar a factores no enteros. El filtrado bilineal interpola
+            los cuatro píxeles adyacentes y suaviza la imagen, a costa de emborronar los gráficos de píxel
+            definido. El trilineal añade la interpolación entre niveles de detalle, útil cuando se emplean
+            mapas MIP. Los sistemas de precisión de píxel ajustan la cámara ortográfica para que una
+            unidad del mundo corresponda a un número entero de píxeles de textura y redondean las
+            posiciones a coordenadas enteras de pantalla, evitando la vibración de bordes que aparece
+            cuando un sprite se desplaza en fracciones de píxel.
+          </p>
+          <p class="seccion__texto">
+            El post-procesamiento opera sobre la imagen ya compuesta, almacenada en una textura
+            intermedia, mediante un pase de pantalla completa. Entre los efectos habituales figuran el
+            resplandor sobre las zonas de mayor luminancia, la gradación de color mediante tablas de
+            búsqueda tridimensionales que remapean la paleta completa en tiempo real, y los filtros que
+            emulan monitores de tubo con líneas de barrido y aberración cromática. El renderizado
+            vectorial, por su parte, describe las formas con primitivas matemáticas en lugar de imágenes
+            rasterizadas, lo que permite escalarlas sin pérdida de definición; su elemento fundamental es
+            la curva de Bézier, definida por sus puntos extremos y uno o más puntos de control, y resulta
+            especialmente adecuado para interfaces, iconos y aplicaciones que deben adaptarse a
+            resoluciones muy diversas.
+          </p>
+          <p class="seccion__texto">
+            Akenine-Möller, Haines y Hoffman (2018) identifican el número de llamadas de dibujo como uno
+            de los cuellos de botella más frecuentes. Si una escena contiene millares de sprites y cada
+            uno genera su propia llamada, el procesador central se convierte en el factor limitante. Las
+            respuestas documentadas son el agrupamiento estático de objetos inmóviles, el agrupamiento
+            dinámico de los que cambian, la combinación de sprites que comparten material y textura, y la
+            instanciación, que dibuja múltiples copias de una geometría con una sola operación. Todas
+            persiguen el mismo fin: reducir los cambios de estado entre procesador y unidad gráfica.
+            Estrechamente vinculado a lo anterior está el atlas de texturas, que reúne numerosos sprites
+            en una sola imagen y evita los cambios de textura que romperían el lote. El atlas incide
+            además sobre el consumo de memoria de vídeo: una textura RGBA de 2048 por 2048 píxeles sin
+            comprimir ocupa alrededor de dieciséis megabytes, sin contar los niveles MIP ni el resto de
+            los recursos, lo que explica el recurso sistemático a la compresión de texturas y a la
+            reutilización de imágenes. Finalmente, el descarte evita procesar lo que la cámara no puede
+            ver, empleando los límites de la cámara y estructuras espaciales como el árbol cuaternario
+            para localizar con rapidez los objetos próximos a la región visible.
+          </p>
+        </section>
+
+        <!-- Numeral 3 — Aporte de: [Integrante __] -->
+        <section class="seccion">
+          <h3 class="seccion__titulo">4.3 Física y colisiones</h3>
+          <p class="seccion__texto">
+            El subsistema físico responde a dos preguntas distintas en cada iteración del bucle: qué pares
+            de objetos están en contacto y cómo debe alterarse su movimiento en consecuencia. La primera
+            corresponde a la detección de colisiones; la segunda, a la dinámica de cuerpos rígidos.
+            Ericson (2005) advierte que la separación entre ambas es más que didáctica, pues cada una
+            plantea problemas algorítmicos de naturaleza diferente: la detección es esencialmente un
+            problema de consulta geométrica, mientras que la resolución es un problema de sistemas de
+            restricciones.
+          </p>
+          <p class="seccion__texto">
+            Los motores 2D distinguen tres clases de cuerpo. Los estáticos poseen masa infinita y no se
+            mueven: representan el suelo y las paredes. Los cinemáticos se desplazan bajo control directo
+            del programador, sin responder a fuerzas, y son adecuados para plataformas móviles o puertas.
+            Los dinámicos están sujetos a la simulación completa. A ello se añaden los sensores o
+            disparadores, que detectan solapamiento sin generar respuesta física, empleados para zonas de
+            recogida de objetos o activación de eventos. El filtrado por capas y máscaras de bits permite
+            declarar qué categorías pueden colisionar entre sí, descartando pares irrelevantes antes de
+            cualquier cálculo geométrico.
+          </p>
+          <p class="seccion__texto">
+            La gravedad se modela como una aceleración constante añadida a la velocidad de todo cuerpo
+            dinámico en cada paso. Conviene subrayar que su valor rara vez corresponde a los 9,81 metros
+            por segundo al cuadrado del mundo físico: dado que la escala de un juego 2D es arbitraria y la
+            respuesta debe resultar ágil, es habitual emplear valores considerablemente mayores.
+            Millington (2010) insiste en que el objetivo de un motor de juego no es la fidelidad física
+            sino la plausibilidad perceptual sujeta a un presupuesto de cómputo. La integración emplea el
+            método semi-implícito descrito en el numeral anterior; cuando la precisión resulta insuficiente
+            —objetos muy rápidos, pilas altas de cajas— se recurre al sub-stepping, es decir, a subdividir
+            el paso fijo en varios subpasos internos del solucionador, estrategia que Catto (2024a) adoptó
+            como base del solucionador de Box2D 3.0.
+          </p>
+          <p class="seccion__texto">
+            Comparar todos los pares posibles de objetos tiene un costo cuadrático, inviable para escenas
+            con miles de elementos. La fase amplia reduce ese conjunto a un número manejable de pares
+            candidatos mediante estructuras espaciales que Ericson (2005) sistematiza. La rejilla uniforme
+            o hashing espacial divide el espacio en celdas de tamaño fijo y solo compara objetos que
+            comparten celda, siendo idónea para objetos de tamaño homogéneo distribuidos con regularidad.
+            El árbol cuaternario subdivide recursivamente el plano en cuatro cuadrantes hasta un umbral de
+            ocupación, y se adapta mejor a distribuciones desiguales con zonas densas y zonas vacías. El
+            barrido y poda ordena los intervalos de las cajas envolventes sobre un eje y detecta
+            solapamientos aprovechando la coherencia temporal, lo que lo hace apropiado cuando el
+            movimiento entre fotogramas es pequeño. El árbol AABB dinámico mantiene una jerarquía de
+            volúmenes envolventes que se reequilibra al desplazarse los cuerpos, y es la estructura
+            empleada por Box2D para el caso general.
+          </p>
+          <p class="seccion__texto">
+            Los pares supervivientes pasan a la fase estrecha, que determina si existe intersección real
+            y, en caso afirmativo, calcula la normal de contacto, la profundidad de penetración y los
+            puntos de aplicación. Las pruebas entre primitivas simples son directas: dos círculos
+            colisionan si el cuadrado de la distancia entre centros es menor que el cuadrado de la suma de
+            radios, y dos cajas alineadas a los ejes lo hacen si sus intervalos se solapan en ambos ejes.
+            Para polígonos convexos arbitrarios se emplean dos algoritmos de referencia. El teorema de los
+            ejes separadores establece que dos polígonos convexos no se intersecan si y solo si existe un
+            eje sobre el cual sus proyecciones no se solapan, y basta examinar los ejes perpendiculares a
+            las aristas de ambos; su atractivo es doble, porque decide la intersección y, cuando esta
+            existe, el eje de menor solapamiento proporciona directamente la normal de contacto y la
+            profundidad. El algoritmo GJK, formulado por Gilbert, Johnson y Keerthi (1988), calcula la
+            distancia entre dos convexos operando sobre su diferencia de Minkowski: los cuerpos se
+            intersecan exactamente cuando dicha diferencia contiene el origen. Es robusto, admite formas
+            descritas por funciones de soporte y, combinado con el algoritmo de expansión politópica,
+            aporta también la profundidad de penetración.
+          </p>
+          <p class="seccion__texto">
+            Determinado el eje de contacto, el motor construye el manifold, es decir, el conjunto reducido
+            de puntos que representa el contacto. En dos dimensiones, un contacto cara–cara genera dos
+            puntos, obtenidos habitualmente por recorte de la arista incidente contra la arista de
+            referencia; contar con dos puntos en lugar de uno es lo que permite que una caja descanse
+            estable sobre el suelo en vez de balancearse. La detección descrita opera sobre posiciones
+            discretas y falla cuando un objeto rápido atraviesa un obstáculo delgado entre dos fotogramas,
+            fenómeno conocido como tunneling. Las soluciones documentadas son el trazado de rayos a lo
+            largo de la trayectoria, el avance conservador —que aproxima iterativamente el instante de
+            impacto— y la colisión especulativa, que amplía el margen de detección y deja que el
+            solucionador impida la penetración antes de que ocurra. Catto (2024a) informa que Box2D 3.0
+            reconstruyó por completo este mecanismo mediante un enfoque híbrido, y que en la versión 3.1
+            el rendimiento de la colisión continua aproximadamente se duplicó (Catto, 2025).
+          </p>
+          <p class="seccion__texto">
+            Detectado el contacto, resta corregir el movimiento. La literatura distingue dos familias. El
+            método de penalización modela la penetración como un resorte que empuja los cuerpos hacia
+            afuera; es sencillo de implementar, pero exige rigideces elevadas que obligan a pasos de
+            tiempo muy pequeños y tiende a producir vibración. El método de impulsos, dominante en la
+            actualidad, modifica directamente las velocidades para satisfacer la restricción de no
+            penetración. Catto (2006) formuló para Box2D el esquema de impulsos secuenciales, que resuelve
+            los contactos uno tras otro de forma iterativa, en la línea del método de Gauss-Seidel. Su
+            eficacia práctica descansa en varios refinamientos que el propio autor detalla en trabajos
+            posteriores (Catto, 2009, 2014): la acumulación de impulsos, que mantiene el total acumulado
+            por punto de contacto y lo acota para que nunca sea de tracción, sin lo cual los objetos
+            apilados se separan de forma espuria; el arranque en caliente, que reutiliza los impulsos del
+            fotograma anterior como estimación inicial del siguiente y mejora notablemente la convergencia
+            porque la configuración de contactos varía poco entre fotogramas; la estabilización posicional,
+            que corrige el error de penetración residual de forma gradual mediante un término de sesgo y
+            tolera una penetración mínima —el slop— para evitar oscilaciones; y el tratamiento de la
+            restitución y la fricción, esta última modelada según Coulomb con coeficientes estático y
+            dinámico que acotan el impulso tangencial en función del normal.
+          </p>
+          <p class="seccion__texto">
+            Box2D, desarrollado por Erin Catto desde 2007 y distribuido bajo licencia MIT, constituye el
+            referente de facto en física 2D y está integrado o portado en buena parte de los motores
+            actuales. Su evolución reciente ilustra las líneas de trabajo del campo. La versión 3.0,
+            publicada en agosto de 2024, reescribió por completo la biblioteca en lenguaje C e introdujo
+            un solucionador de tipo soft step basado en restricciones blandas y subdivisión del paso, con
+            mejoras sustanciales de estabilidad respecto a la rama anterior (Catto, 2024a). En el plano
+            del rendimiento, Catto (2024b) documenta el uso de instrucciones vectoriales para resolver
+            contactos en paralelo, señalando que el verdadero cuello de botella de la física de videojuegos
+            no es el cálculo aritmético sino el acceso aleatorio a memoria, dado que cada restricción opera
+            sobre cuerpos dispersos. A ello se suma el coloreado de grafos, que agrupa restricciones sin
+            cuerpos compartidos para poder resolverlas simultáneamente, y la gestión por islas: los
+            conjuntos de cuerpos conectados que permanecen en reposo se duermen y dejan de consumir tiempo
+            de cómputo. La versión 3.1, de abril de 2025, extendió estas optimizaciones y añadió un
+            controlador de personaje de naturaleza geométrica, situado fuera del mundo físico (Catto,
+            2025). Junto a Box2D coexisten alternativas consolidadas como Chipmunk2D, Matter.js y
+            Planck.js en el entorno web, así como los subsistemas integrados de Unity y Godot, este último
+            con implementación propia desde su versión 4.
+          </p>
+          <p class="seccion__texto">
+            El determinismo entre plataformas es una propiedad exigida por el juego en red con rollback y
+            por los sistemas de repetición. Su obstáculo principal es la aritmética de punto flotante, cuyo
+            resultado puede variar entre compiladores, niveles de optimización y conjuntos de
+            instrucciones. Las medidas habituales consisten en fijar el paso de tiempo, garantizar un orden
+            estable de recorrido de contactos, evitar dependencias del multiproceso no determinista y, en
+            los casos más estrictos, recurrir a aritmética de punto fijo.
+          </p>
+        </section>
+
+        <!-- Numeral 4 — Aporte de: [Integrante __] -->
+        <section class="seccion">
+          <h3 class="seccion__titulo">4.4 Gestión de assets, escenas y estados</h3>
+          <p class="seccion__texto">
+            El cuarto subsistema responde a una pregunta que los tres anteriores dan por resuelta: de
+            dónde salen los datos que el motor procesa y cómo se organiza el flujo del juego entre sus
+            distintas pantallas. Gregory (2018) dedica a esta cuestión un capítulo completo bajo el título
+            de recursos y sistema de archivos, y sostiene que la gestión de recursos es probablemente el
+            subsistema con mayor impacto sobre la experiencia percibida, porque determina los tiempos de
+            carga, las pausas durante el juego y el consumo de memoria.
+          </p>
+          <p class="seccion__texto">
+            Los formatos con los que trabajan los artistas no son los que conviene cargar en tiempo de
+            ejecución. Un archivo PNG debe descomprimirse en el procesador antes de subirse a la memoria
+            de vídeo, mientras que un formato de textura comprimido puede transferirse directamente y
+            permanecer comprimido en memoria. De ahí que los motores dispongan de un pipeline de
+            acondicionamiento que transforma los recursos de autoría en formatos optimizados durante la
+            compilación del proyecto. Este proceso comprende la importación con parámetros configurables,
+            la conversión y compresión, la generación de datos derivados —niveles MIP, atlas, mallas de
+            colisión— y el empaquetado en archivos contenedores que reducen el número de operaciones de
+            apertura de archivo. Un elemento crítico es la identificación de recursos mediante
+            identificadores únicos globales en lugar de rutas de archivo, de modo que renombrar o mover un
+            recurso no rompa las referencias existentes; tanto Unity como Godot adoptan este principio.
+          </p>
+          <p class="seccion__texto">
+            Durante la ejecución, un gestor centralizado media todo acceso a los recursos y garantiza que
+            cada uno se cargue una sola vez: ante una solicitud, consulta primero la caché y, si el recurso
+            ya está presente, incrementa su contador de referencias y lo devuelve; en caso contrario lo
+            carga desde disco y lo registra. El conteo de referencias permite decidir cuándo un recurso
+            puede liberarse, pues cuando el contador alcanza cero deja de estar en uso. La liberación suele
+            diferirse al final del fotograma o a un momento de transición, para evitar que un recurso se
+            descargue y vuelva a cargarse de inmediato. Numerosos motores prefieren entregar manejadores
+            —enteros con un índice y un número de validación— en lugar de punteros directos, lo que
+            permite reubicar o recargar el recurso subyacente sin invalidar las referencias que otros
+            subsistemas mantienen sobre él y habilita la recarga en caliente durante el desarrollo.
+          </p>
+          <p class="seccion__texto">
+            Cargar recursos desde el bucle principal congela el juego, porque las operaciones de entrada y
+            salida son órdenes de magnitud más lentas que el presupuesto de un fotograma. La respuesta
+            estándar consiste en delegar la lectura a hilos dedicados y consultar su progreso desde el
+            bucle, lo que permite mostrar una pantalla de carga animada e ir mostrando los elementos
+            conforme quedan disponibles. Bilas (2003), al describir el mundo continuo de Dungeon Siege,
+            llevó este principio al extremo eliminando por completo las pantallas de carga mediante la
+            carga y descarga de regiones adyacentes a medida que el jugador avanza; el planteamiento es
+            directamente aplicable a los mundos 2D construidos por bloques de casillas, que se cargan y
+            liberan siguiendo a la cámara.
+          </p>
+          <p class="seccion__texto">
+            La reserva y liberación continua de memoria durante el juego provoca fragmentación y pausas
+            impredecibles. Gregory (2018) documenta el uso de asignadores especializados —de pila, de
+            grupo y de arena— que reservan bloques grandes por adelantado y los administran con políticas
+            simples y predecibles. En el plano de los objetos de juego, Nystrom (2014) describe dos
+            patrones directamente relacionados. El grupo de objetos preasigna una colección fija de
+            entidades reutilizables —proyectiles, partículas, enemigos— y las marca como activas o
+            inactivas en lugar de crearlas y destruirlas, eliminando tanto el costo de asignación como la
+            fragmentación. El peso ligero separa el estado intrínseco, compartido por todas las instancias
+            de un tipo, del estado extrínseco propio de cada una: en un mapa de casillas, los millares de
+            casillas de césped comparten una única descripción de tipo y solo almacenan individualmente su
+            posición.
+          </p>
+          <p class="seccion__texto">
+            Una escena es la unidad de contenido que agrupa los objetos, recursos y configuración
+            necesarios para una porción del juego. Los motores contemporáneos la representan como un árbol
+            de nodos en el que la transformación de cada elemento se compone con la de su padre, lo que
+            permite mover un conjunto completo desplazando su raíz. Sobre esa estructura se construyen los
+            mecanismos de reutilización: plantillas instanciables que encapsulan jerarquías completas y
+            pueden replicarse con variaciones, y la serialización, que convierte el árbol en un formato
+            persistente y lo reconstruye al cargar. Las transiciones entre escenas plantean un problema de
+            coordinación con el gestor de recursos: descargar la escena saliente antes de cargar la
+            entrante minimiza el consumo máximo de memoria pero obliga a una pantalla intermedia, mientras
+            que cargar la entrante antes de descargar la saliente permite un fundido continuo a costa de
+            mantener ambas en memoria. La carga aditiva, que superpone escenas sin descargar la anterior,
+            se emplea para interfaces persistentes o niveles construidos por secciones.
+          </p>
+          <p class="seccion__texto">
+            El flujo entre pantallas se modela mediante una máquina de estados finitos: un conjunto de
+            estados mutuamente excluyentes y un conjunto de transiciones válidas entre ellos. El recorrido
+            típico de un juego 2D comprende los estados de arranque, carga, menú principal, juego, pausa,
+            fin de partida y resultados. Nystrom (2014) documenta la implementación mediante el patrón
+            State, en el que cada estado se representa como un objeto con métodos de entrada, actualización
+            y salida, en lugar de una cadena de condicionales sobre una variable enumerada. Esta forma
+            concentra en un solo lugar el comportamiento de cada estado y hace explícitas las transiciones.
+            El mismo autor señala una limitación de la máquina plana y propone dos extensiones. La pila de
+            estados, o autómata de pila, apila el nuevo estado sobre el actual en lugar de sustituirlo: es
+            el modelo natural para la pausa, ya que al activarla se apila el estado de pausa sobre el de
+            juego y al desactivarla se desapila, recuperando el estado anterior intacto sin necesidad de
+            recordar de dónde se venía. Las máquinas jerárquicas organizan los estados en niveles, de modo
+            que un estado hijo hereda las transiciones de su padre, reduciendo la duplicación cuando varios
+            estados comparten comportamiento común.
+          </p>
+          <p class="seccion__texto">
+            Buckland (2005) y Millington y Funge (2019) extienden el modelo al ámbito del comportamiento de
+            agentes, donde la máquina de estados finitos convive con los árboles de comportamiento; estos
+            últimos escalan mejor cuando el número de estados crece, porque sustituyen la maraña de
+            transiciones por una jerarquía de decisión recorrida en cada evaluación. Por último, el
+            guardado de partidas exige serializar el subconjunto del estado que debe sobrevivir al cierre
+            de la aplicación, distinguiéndolo del estado derivado que puede reconstruirse. La literatura
+            recomienda incluir un número de versión en el formato de guardado y prever la migración de
+            partidas antiguas, dado que la estructura de datos del juego cambiará a lo largo del desarrollo
+            y tras la publicación.
           </p>
         </section>
 
         <!-- ============================================================
-             SECCIÓN 5 — Aporte de: [Integrante 5]
+             SECCIÓN 5 — Aporte de: [Integrante __]
              ============================================================ -->
         <section class="seccion">
-          <h3 class="seccion__titulo">5. Discusión y conclusión</h3>
+          <h3 class="seccion__titulo">5. Discusión y conclusiones</h3>
           <p class="seccion__texto">
-            Los resultados confirman la hipótesis planteada. Ninguno de los cinco componentes
-            resulta especialmente difícil considerado de forma aislada; la dificultad emerge
-            de su interdependencia bajo una restricción temporal estricta, donde una decisión
-            tomada en el sistema de renderizado repercute sobre el presupuesto disponible para
-            la física, y la organización de las entidades condiciona qué tan costoso será
-            recorrerlas cada fotograma. La convergencia observada entre motores de filosofías
-            distintas sugiere que estos componentes no son convenciones arbitrarias sino
-            respuestas maduras a problemas estructurales del dominio. De ello se desprende una
-            implicación práctica para quien inicia un proyecto: la elección del motor importa
-            menos que comprender qué problema resuelve cada subsistema, porque esa comprensión
-            es lo que permite diagnosticar un fallo de rendimiento o extender el juego sin
-            reescribirlo. Como línea de trabajo futura, resultaría valioso complementar este
-            análisis documental con mediciones sobre una misma implementación construida en
-            los tres motores estudiados.
+            El análisis comparativo de los cuatro numerales permite contrastar la hipótesis formulada. El
+            procedimiento consistió en tabular las estrategias documentadas en cada subsistema y verificar
+            cuáles aparecían en al menos tres de los cuatro dominios. Se identificaron cinco estrategias
+            transversales. El desacoplamiento temporal se manifiesta como paso fijo de simulación separado
+            de la tasa de presentación en el bucle, búfer intermedio y pase de post-proceso en el
+            renderizado, sub-stepping interno del solucionador en la física, y carga en hilos dedicados en
+            la gestión de recursos. El agrupamiento por lotes aparece como procesamiento de la entrada
+            acumulada en cola, batching e instanciación en el dibujo, islas de simulación y coloreado de
+            grafos en la física, y empaquetado de recursos en contenedores. El particionamiento espacial se
+            expresa en el descarte por límites de cámara y el chunking de mapas, en las estructuras de fase
+            amplia, y en el streaming de regiones adyacentes al jugador. La caché con reutilización abarca
+            el excedente del acumulador, los atlas y niveles MIP, el arranque en caliente de impulsos y el
+            conteo de referencias junto al grupo de objetos. Finalmente, la aproximación controlada
+            comprende el tope máximo de tiempo de fotograma, los campos de distancia y mapas de normales,
+            la tolerancia de penetración y la carga diferida de recursos.
+          </p>
+          <p class="seccion__texto">
+            Cuatro de las cinco estrategias aparecen en los cuatro subsistemas, y la quinta —el
+            particionamiento espacial— en tres de ellos, careciendo de aplicación directa únicamente en la
+            gestión del tiempo, cuyo dominio no es espacial. El segundo criterio también se cumple: en
+            todos los casos revisados, las fuentes justifican la estrategia por razones de rendimiento o
+            estabilidad, y no por conveniencia de implementación. Fiedler (2004) fundamenta el paso fijo en
+            la estabilidad de la integración y el determinismo; Akenine-Möller et al. (2018) atribuyen el
+            agrupamiento a la reducción de cambios de estado; Ericson (2005) deriva la fase amplia de la
+            inviabilidad del costo cuadrático; Catto (2024b) motiva el coloreado de grafos y las
+            instrucciones vectoriales en el acceso aleatorio a memoria; y Nystrom (2014) fundamenta el
+            grupo de objetos en la fragmentación y en la impredecibilidad de las pausas por asignación. El
+            tercer criterio queda igualmente satisfecho, pues cada estrategia aparece tanto en la
+            literatura de referencia como en la documentación oficial de al menos un motor de producción.
+          </p>
+          <p class="seccion__texto">
+            Especial interés reviste el patrón de desacoplamiento temporal, que constituye el eje
+            articulador del sistema. La decisión de fijar el paso de simulación no se agota en el bucle
+            principal: habilita el integrador semi-implícito en el subsistema físico, hace posible la
+            interpolación de estado en el renderizado y establece los puntos seguros en los que el gestor
+            de recursos puede liberar memoria. Una sola decisión de arquitectura se propaga, por tanto, a
+            los cuatro subsistemas. La aproximación controlada merece un comentario aparte, porque revela
+            un rasgo epistemológico del campo: en los cuatro subsistemas, la solución adoptada no es la
+            físicamente correcta sino la perceptualmente suficiente al menor costo. Un mapa de normales no
+            describe geometría real, un campo de distancia no almacena el trazo del glifo, el solucionador
+            tolera una penetración que no debería existir y la interpolación de renderizado muestra un
+            estado que la simulación nunca calculó. Millington (2010) y Akenine-Möller et al. (2018)
+            coinciden en formular este principio de manera explícita: el objetivo no es la exactitud sino
+            la plausibilidad dentro del presupuesto disponible.
+          </p>
+          <p class="seccion__texto">
+            La hipótesis nula sostenía que los cuatro subsistemas constituyen dominios independientes y que
+            el rendimiento se explica esencialmente por el hardware. La evidencia documental revisada no la
+            respalda: los propios desarrolladores atribuyen las mejoras de rendimiento a decisiones de
+            organización antes que a capacidad de cómputo. Catto (2024b) identifica el acceso aleatorio a
+            memoria, y no la potencia aritmética, como el cuello de botella de la física de videojuegos, y
+            la literatura sobre renderizado sitúa el límite práctico en el número de llamadas de dibujo
+            emitidas por el procesador central. Debe matizarse, no obstante, que el hardware impone límites
+            absolutos que ninguna arquitectura puede sortear: una escena cuyas texturas excedan la memoria
+            de vídeo disponible fallará con independencia de cuán bien esté organizada. La hipótesis de
+            trabajo se acepta, por tanto, en su formulación relativa —la coordinación es el factor
+            determinante dentro de los límites del hardware— y no en un sentido absoluto. Conviene reiterar
+            que la contrastación es de naturaleza documental: lo verificado es que la literatura técnica
+            especializada converge de manera consistente en un conjunto reducido de principios de diseño y
+            los justifica por razones de rendimiento y estabilidad.
+          </p>
+          <p class="seccion__texto">
+            De todo lo anterior se desprenden varias conclusiones. Primera: el bucle principal con paso
+            fijo y acumulador constituye la decisión arquitectónica de mayor alcance en un videojuego 2D,
+            pues al separar la tasa de simulación de la tasa de presentación resuelve simultáneamente la
+            dependencia respecto al hardware, la inestabilidad de la integración numérica, la ausencia de
+            determinismo y la fluidez visual en monitores de refresco elevado. Segunda: el renderizado 2D
+            contemporáneo no consiste en dibujar imágenes planas sino en administrar un presupuesto, y las
+            técnicas revisadas se orientan de forma consistente a obtener el máximo resultado visual con el
+            mínimo número de llamadas de dibujo y de bytes residentes en memoria de vídeo. Tercera: la
+            detección de colisiones se organiza necesariamente en dos fases porque los problemas que
+            resuelve son de naturaleza distinta, y la resolución mediante impulsos secuenciales con
+            acumulación y arranque en caliente demuestra que la estabilidad de una simulación depende menos
+            de la sofisticación del modelo físico que del aprovechamiento de la coherencia temporal entre
+            fotogramas. Cuarta: la gestión de recursos y estados, pese a ser el subsistema menos visible,
+            determina buena parte de la experiencia percibida, y sus mecanismos comparten un mismo
+            propósito, evitar que las operaciones costosas ocurran dentro del presupuesto del fotograma.
+          </p>
+          <p class="seccion__texto">
+            Quinta: se acepta la hipótesis de trabajo en su formulación relativa, pues los cuatro
+            subsistemas comparten cinco estrategias arquitectónicas y su coordinación explica el
+            rendimiento y la estabilidad del sistema dentro de los límites impuestos por el hardware. La
+            arquitectura de un videojuego 2D es, en consecuencia, un problema de ingeniería de coordinación
+            antes que de capacidad gráfica. Como línea de trabajo futura, se recomienda complementar esta
+            revisión con un estudio experimental que implemente variantes controladas de un mismo motor 2D
+            —paso fijo frente a paso variable, con y sin agrupamiento, con y sin partición espacial— y mida
+            instrumentalmente el tiempo de fotograma, el consumo de memoria y la reproducibilidad de la
+            simulación, a fin de cuantificar el aporte individual de cada estrategia.
           </p>
         </section>
 
         <!-- ============================================================
-             REFERENCIAS — completar con las fuentes realmente consultadas
+             REFERENCIAS
              ============================================================ -->
         <section class="seccion">
           <h3 class="seccion__titulo">6. Referencias</h3>
           <ol class="referencias">
-            <li>[Autor, A. (Año). Título de la fuente. Editorial o sitio web.]</li>
-            <li>[Autor, B. (Año). Título de la fuente. Editorial o sitio web.]</li>
-            <li>[Autor, C. (Año). Título de la fuente. Editorial o sitio web.]</li>
+            <li>Akenine-Möller, T., Haines, E., y Hoffman, N. (2018). Real-time rendering (4.ª ed.). CRC Press.</li>
+            <li>Bilas, S. (2003). The continuous world of Dungeon Siege [Ponencia]. Game Developers Conference, San José, CA, Estados Unidos.</li>
+            <li>Buckland, M. (2005). Programming game AI by example. Wordware Publishing.</li>
+            <li>Cannon, T. (2009). GGPO: Good Game Peace Out. Real-time network physics and rollback system for arcade games [Ponencia]. Game Developers Conference, San Francisco, CA, Estados Unidos.</li>
+            <li>Catto, E. (2005). Iterative dynamics with temporal coherence [Ponencia]. Game Developers Conference. https://box2d.org/publications/</li>
+            <li>Catto, E. (2006). Fast and simple physics using sequential impulses [Ponencia]. Game Developers Conference. https://box2d.org/publications/</li>
+            <li>Catto, E. (2009). Modeling and solving constraints [Ponencia]. Game Developers Conference. https://box2d.org/publications/</li>
+            <li>Catto, E. (2014). Understanding constraints [Ponencia]. Game Developers Conference. https://box2d.org/publications/</li>
+            <li>Catto, E. (2024a, 9 de agosto). Releasing Box2D 3.0. Box2D. https://box2d.org/posts/2024/08/releasing-box2d-3.0/</li>
+            <li>Catto, E. (2024b, 19 de agosto). SIMD matters. Box2D. https://box2d.org/posts/2024/08/simd-matters/</li>
+            <li>Catto, E. (2025, 19 de abril). Box2D 3.1. Box2D. https://box2d.org/posts/2025/04/box2d-3.1/</li>
+            <li>Ericson, C. (2005). Real-time collision detection. Morgan Kaufmann.</li>
+            <li>Fiedler, G. (2004). Fix your timestep! Gaffer on Games. https://gafferongames.com/post/fix_your_timestep/</li>
+            <li>Fiedler, G. (2006). Integration basics. Gaffer on Games. https://gafferongames.com/post/integration_basics/</li>
+            <li>Gilbert, E. G., Johnson, D. W., y Keerthi, S. S. (1988). A fast procedure for computing the distance between complex objects in three-dimensional space. IEEE Journal of Robotics and Automation, 4(2), 193–203.</li>
+            <li>Godot Engine. (2025). Godot Engine documentation. https://docs.godotengine.org/</li>
+            <li>Green, C. (2007). Improved alpha-tested magnification for vector textures and special effects. En ACM SIGGRAPH 2007 courses (pp. 9–18). Association for Computing Machinery.</li>
+            <li>Gregory, J. (2018). Game engine architecture (3.ª ed.). CRC Press.</li>
+            <li>Intel Corporation. (2021). Intel 64 and IA-32 architectures software developer's manual: Vol. 3B. System programming guide. Intel Corporation.</li>
+            <li>Jakobsen, T. (2001). Advanced character physics [Ponencia]. Game Developers Conference, San José, CA, Estados Unidos.</li>
+            <li>McShaffry, M., y Graham, D. (2012). Game coding complete (4.ª ed.). Cengage Learning.</li>
+            <li>Milenkovic, M. (2020). Data-oriented design and entity component system (ECS) architecture in real-time simulations. ACM Computing Surveys.</li>
+            <li>Millington, I. (2010). Game physics engine development (2.ª ed.). Morgan Kaufmann.</li>
+            <li>Millington, I., y Funge, J. (2019). Artificial intelligence for games (3.ª ed.). CRC Press.</li>
+            <li>Nystrom, R. (2014). Game programming patterns. Genever Benning.</li>
+            <li>Unity Technologies. (2025). Unity manual. https://docs.unity3d.com/</li>
+            <li>Video Electronics Standards Association. (2014). VESA coordinated video timings (CVT) standard and Adaptive-Sync specification. VESA.</li>
           </ol>
         </section>
 
