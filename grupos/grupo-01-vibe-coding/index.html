@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibe Coding — Revista de Investigación</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <header class="revista__header">
+    <span class="revista__eyebrow">Investigación · Ingeniería en Sistemas</span>
+    <h1 class="revista__titulo">Vibe Coding</h1>
+    <p class="revista__subtitulo">Los beneficios llegan primero; los costos, después</p>
+    <p class="revista__meta">
+      Grupo 01 · Los Big Datas · Edición Agosto 2026
+    </p>
+  </header>
+
+  <main>
+
+    <article class="articulo">
+
+      <h2 class="articulo__titulo">
+        Vibe Coding: programar delegando en modelos de lenguaje
+      </h2>
+
+      <p class="articulo__autores">
+        Por: Luis Alejandro Godoy Barrera (202505284) ·
+        Ancelmo Gerardo Pérez López (202500623) ·
+        Pablo Abraham Petet García (202502116) ·
+        Anthony Bryan Ramírez Cante (202501193)
+      </p>
+
+      <div class="articulo__resumen">
+        <span class="articulo__resumen-titulo">Resumen</span>
+        <p>
+          Esta investigación analiza el <em>vibe coding</em>, la práctica de delegar la escritura de código a modelos de lenguaje mientras el desarrollador orienta el proceso mediante instrucciones en lenguaje natural. A partir de la revisión de literatura especializada, reportes de productividad y encuestas a desarrolladores, se contrastaron los beneficios documentados —velocidad de prototipado, reducción de tareas repetitivas y mayor accesibilidad— con los riesgos reportados en calidad, seguridad y formación. Los resultados muestran que unos y otros provienen de la misma delegación, pero se distribuyen de forma asimétrica: la ganancia se concentra al inicio y es reversible, mientras que el costo aparece después y, en seguridad, no admite corrección retroactiva. Se concluye que el aprovechamiento de estas herramientas depende de la capacidad de auditar lo que producen, y se propone un criterio de uso basado en el costo del error.
+        </p>
+      </div>
+
+      <div class="articulo__cuerpo">
+
+        <!-- Ancelmo Gerardo Pérez López -->
+        <section class="seccion">
+          <h3 class="seccion__titulo">1. Introducción y planteamiento del problema</h3>
+          <p class="seccion__texto">
+            El desarrollo de software ha experimentado cambios importantes con la
+            incorporación de modelos de lenguaje de gran escala (LLM), capaces de generar,
+            modificar, explicar y depurar código a partir de instrucciones escritas en
+            lenguaje natural. Dentro de este contexto surgió el concepto de <em>vibe
+            coding</em>, término popularizado por el científico especializado en
+            inteligencia artificial Andrej Karpathy en febrero de 2025 para describir una
+            modalidad de programación en la que el desarrollador delega una parte
+            considerable de la escritura y modificación del código al modelo de lenguaje,
+            mientras orienta el proceso mediante instrucciones y evaluaciones del resultado
+            (Karpathy, 2025).
+          </p>
+          <p class="seccion__texto">
+            A diferencia de la programación tradicional, en la que el desarrollador suele
+            encargarse directamente del diseño, escritura, depuración y revisión de cada
+            componente del software, el <em>vibe coding</em> desplaza parte de estas
+            actividades hacia la interacción con herramientas basadas en LLM. Esto no quiere
+            decir que toda utilización de IA para programar sea <em>vibe coding</em>, sino
+            que el concepto hace referencia a un mayor nivel de delegación, en el que el
+            usuario puede concentrarse principalmente en describir lo que desea obtener y
+            verificar posteriormente el resultado generado.
+          </p>
+          <p class="seccion__texto">
+            La relevancia de este cambio no se limita al ámbito profesional. La inteligencia
+            artificial también está siendo incorporada en la formación universitaria
+            relacionada con la programación. Un estudio publicado por Fan et al. (2025) en el
+            <em>International Journal of STEM Education</em> analizó durante dos años a 234
+            estudiantes universitarios y comparó la programación asistida por inteligencia
+            artificial con la programación individual y la programación en parejas humanas.
+            Los autores encontraron que el grupo que utilizó asistencia de IA presentó
+            mayores niveles de motivación, menor ansiedad relacionada con la programación y
+            mejores resultados en las tareas evaluadas. Sin embargo, la programación entre
+            personas obtuvo mejores resultados en las percepciones de colaboración y
+            presencia social, lo que sugiere que la IA puede complementar determinadas
+            actividades de aprendizaje sin sustituir completamente los beneficios de la
+            interacción humana.
+          </p>
+        </section>
+
+        <section class="seccion">
+          <h3 class="seccion__titulo">2. Objetivos e hipótesis</h3>
+          <p class="seccion__texto">
+            <strong>Objetivo general.</strong> Analizar, mediante la revisión de literatura
+            especializada, las principales características, beneficios, riesgos e
+            implicaciones del <em>vibe coding</em> en el desarrollo de software y en la
+            formación de estudiantes de Ingeniería en Sistemas.
+          </p>
+          <p class="seccion__texto"><strong>Objetivos específicos:</strong></p>
+          <ul class="seccion__lista">
+            <li>
+              <strong>Describir</strong> el concepto de <em>vibe coding</em>, su origen y sus
+              principales diferencias respecto al desarrollo de software tradicional.
+            </li>
+            <li>
+              <strong>Identificar</strong> los principales beneficios asociados al uso de
+              herramientas basadas en modelos de lenguaje para la generación y modificación
+              de código, de acuerdo con la literatura especializada.
+            </li>
+            <li>
+              <strong>Examinar</strong> los riesgos y limitaciones documentados en relación
+              con la calidad, seguridad y mantenimiento del código generado mediante IA.
+            </li>
+            <li>
+              <strong>Analizar</strong> las posibles implicaciones del uso de estas
+              herramientas para la formación y el desarrollo de habilidades de los
+              estudiantes de Ingeniería en Sistemas.
+            </li>
+          </ul>
+          <p class="seccion__texto">
+            <strong>Hipótesis.</strong> Se espera que la revisión de la literatura muestre
+            que el <em>vibe coding</em> puede facilitar determinadas actividades del
+            desarrollo de software, especialmente aquellas relacionadas con la generación
+            rápida de soluciones y tareas de programación, pero que su utilización requiere
+            que el usuario pueda comprender, revisar y validar el código generado.
+          </p>
+        </section>
+
+        <!-- Pablo Abraham Petet García -->
+        <section class="seccion">
+          <h3 class="seccion__titulo">3. Metodología</h3>
+          <p class="seccion__texto">
+            Para investigar cómo el <em>vibe coding</em> está impactando la industria,
+            nuestra metodología se basó en la revisión de fuentes documentales y encuestas
+            recientes. Consultamos reportes de productividad de grandes plataformas, como el
+            estudio <em>Quantifying the impact of AI</em> de GitHub, y analizamos los
+            resultados de encuestas globales a desarrolladores, como el <em>Stack Overflow
+            Developer Survey</em>.
+          </p>
+          <p class="seccion__texto">
+            El objetivo fue contrastar con datos reales todo el furor que existe alrededor
+            del <em>vibe coding</em> en internet. Buscamos entender en qué tipo de proyectos
+            se está usando más esta práctica y qué opinan los programadores y las empresas
+            sobre los beneficios y los problemas que trae a la hora de crear software.
+          </p>
+        </section>
+
+        <blockquote class="destacado">
+          "El vibe coding lo cambia todo: pasamos de escribir el código línea a línea
+          a enfocarnos en diseñar y guiar la arquitectura del sistema."
+        </blockquote>
+
+        <section class="seccion">
+          <h3 class="seccion__titulo">4.1 Resultados: beneficios encontrados</h3>
+          <p class="seccion__texto">
+            Lo que más destaca de nuestra investigación es cómo el <em>vibe coding</em>
+            dispara la <strong>velocidad de desarrollo</strong>. Básicamente, permite pasar
+            de tener una idea a armar un prototipo funcional en cuestión de horas en lugar de
+            semanas. Al usar lenguaje natural para pedirle a la IA que estructure el código,
+            los equipos pueden levantar interfaces o probar aplicaciones muy rápido para ver
+            si una idea funciona antes de invertirle demasiado tiempo.
+          </p>
+          <p class="seccion__texto">
+            Para los programadores, el mayor alivio es la <strong>reducción de tareas
+            repetitivas</strong>. El <em>vibe coding</em> es eficaz para generar todo ese
+            código base que muchas veces da pereza escribir desde cero. Por ejemplo, sirve
+            para levantar rápido la configuración de un servidor en Node.js, armar los
+            componentes en Next.js o hacer la conexión básica a una base de datos. Al quitar
+            ese peso de encima, nos deja más <strong>espacio para la creatividad</strong> y
+            para pensar en la lógica y la seguridad de la aplicación.
+          </p>
+          <p class="seccion__texto">
+            Finalmente, encontramos un fuerte impacto en la <strong>accesibilidad y
+            democratización</strong> del software. Perfiles sin formación técnica profunda
+            ahora son capaces de materializar soluciones de software funcionales. Sin
+            embargo, para las empresas que desarrollan sistemas críticos, la conclusión es
+            clara: el <em>vibe coding</em> no reemplaza al ingeniero, sino que eleva su rol,
+            convirtiéndolo en un orquestador que dirige la IA y audita los resultados.
+          </p>
+        </section>
+
+        <!-- Luis Alejandro Godoy Barrera -->
+        <section class="seccion">
+          <h3 class="seccion__titulo">4.2 Resultados: riesgos y desventajas</h3>
+          <p class="seccion__texto">
+            <strong>Fragilidad del código.</strong> El código generado por IA falla más de lo
+            que aparenta. Suele funcionar bien al principio, pero arrastra errores escondidos:
+            según los reportes consultados, solo uno de cada diez fragmentos pasa una revisión
+            de seguridad básica. Además, la IA a veces inventa librerías que no existen, lo
+            que abre la puerta a ataques como el <em>slopsquatting</em>.
+          </p>
+          <p class="seccion__texto">
+            <strong>Deuda técnica.</strong> Crear algo rápido con IA es fácil, pero
+            convertirlo en un producto real cuesta mucho trabajo extra. Puede tomar hasta
+            cuatro veces más tiempo, porque hay que eliminar código repetido, escribir pruebas
+            y ordenar todo lo que quedó revuelto.
+          </p>
+          <p class="seccion__texto">
+            <strong>Riesgos de seguridad.</strong> Este es el problema más serio de todos.
+            Casi la mitad del código creado con IA presenta fallas conocidas de seguridad:
+            mala protección de contraseñas, claves secretas expuestas por error, inyección SQL
+            y huecos que dejan entrar a usuarios sin permiso. Esto es especialmente grave en
+            las partes de una aplicación que manejan información personal o dinero, porque un
+            error ahí puede filtrar datos privados o permitir compras no autorizadas. Un caso
+            documentado es el de la aplicación Tea, que dejó a la vista mensajes privados por
+            un fallo de este tipo. En otro incidente, un agente de IA de Replit eliminó por su
+            cuenta una base de datos completa, pese a que se le había indicado no tocar nada.
+          </p>
+          <p class="seccion__texto">
+            <strong>Atrofia de habilidades.</strong> Preocupa que quienes están empezando a
+            programar dependan tanto de la IA que no entiendan lo que están haciendo. Esto
+            puede formar gente que sabe pedirle cosas al modelo, pero no sabe corregir un
+            error cuando algo falla. También reduce las oportunidades de aprender programando
+            en el trabajo, como se hacía antes.
+          </p>
+          <p class="seccion__texto">
+            <strong>Escepticismo de los expertos.</strong> Muchos programadores con años de
+            experiencia no confían en esta forma de trabajar, porque les ha tocado arreglar
+            proyectos hechos así y les cuesta mucho esfuerzo. Ya hay personas que se dedican
+            únicamente a limpiar este tipo de código. Un profesor del MIT lo comparó con una
+            tarjeta de crédito: te deja avanzar rápido, pero después hay que pagar la cuenta.
+          </p>
+        </section>
+
+        <!-- Anthony Bryan Ramírez Cante -->
+        <section class="seccion">
+          <h3 class="seccion__titulo">5. Discusión y conclusión</h3>
+          <p class="seccion__texto">
+            La hipótesis planteada al inicio de esta investigación sostenía que el <em>vibe coding</em> podía facilitar determinadas actividades del desarrollo de software, siempre que el usuario conservara la capacidad de comprender, revisar y validar el código generado. Los resultados la confirman, pero al confrontarlos entre sí obligan a una lectura cautelosa: los beneficios documentados dependen por completo de esa capacidad de validación, y tanto los riesgos técnicos como los formativos que encontramos apuntan a que no está garantizada.
+          </p>
+          <p class="seccion__texto">
+            Los hallazgos de las secciones 4.1 y 4.2 no describen fenómenos distintos, sino el mismo proceso observado en momentos diferentes del ciclo de desarrollo. La aceleración que permite pasar de una idea a un prototipo funcional en horas y la carga adicional de llevar ese prototipo a producción provienen de la misma delegación. La diferencia está en cómo se distribuyen: la ganancia se concentra al inicio y es reversible, porque un prototipo defectuoso simplemente se descarta; el costo aparece después, se acumula como deuda técnica y, en el caso de las fallas de seguridad, no admite corrección retroactiva. Un dato personal filtrado o una transacción no autorizada no se revierten depurando el código más adelante.
+          </p>
+          <p class="seccion__texto">
+            El cambio más visible que documentan nuestros resultados no está en la herramienta, sino en el rol de quien la usa. La sección 4.1 lo describe como un desplazamiento hacia la función de orquestador: alguien que dirige a la IA y audita lo que produce. Conviene detenerse en lo que implica esa auditoría, porque revisar código propio consiste en verificar decisiones que uno mismo tomó, mientras que revisar código generado exige reconstruir la intención detrás de cada línea sin haber participado en ninguna de ellas. La tarea no se simplifica al delegarla: demanda un criterio más amplio, no menor. Para quienes todavía estamos en formación esto resulta especialmente delicado. Un estudiante puede hoy producir sistemas que funcionan sin comprender por qué funcionan y, sobre todo, sin poder distinguir un resultado correcto de uno que solo lo aparenta. Es una forma de crear a ciegas, aunque la ceguera no consista en no ver lo que se produce: el resultado está a la vista y suele lucir impecable. Consiste en no haber desarrollado el criterio para juzgarlo, como un pintor que tiene el lienzo delante pero nunca aprendió a distinguir una composición sólida de una que se va a agrietar. El estudio de Fan et al. (2025) matiza este punto sin resolverlo: documentó mayor motivación y mejor desempeño con asistencia de IA, pero midió a los estudiantes mientras disponían de la herramienta, no después de retirarla.
+          </p>
+          <p class="seccion__texto">
+            Cualquier conclusión debe reconocer además una limitación temporal. Estas herramientas evolucionan con una rapidez que ninguna revisión bibliográfica alcanza a seguir, y es razonable suponer que parte de las deficiencias técnicas documentadas se reduzcan en versiones posteriores; sostener a estas alturas que usarlas es una pérdida de tiempo sería difícil de defender. Esa mejora, sin embargo, no disuelve el problema central: lo agudiza. Los riesgos que dependen de la calidad del modelo tienden a corregirse con el tiempo; los que dependen del criterio de quien lo usa, no. Un modelo más capaz produce errores menos frecuentes, pero también menos visibles, mejor integrados en código que luce correcto y por lo tanto más difíciles de detectar para alguien sin formación para auditarlos. Cuanto mejor es la herramienta, mayor es el criterio que exige.
+          </p>
+          <p class="seccion__texto">
+            De lo anterior se desprende nuestra propuesta para quienes cursamos Ingeniería en Sistemas. La primera decisión es qué no delegar: las bases —estructuras de datos, lógica, arquitectura y fundamentos de seguridad— son exactamente aquello que permite auditar lo que la herramienta produce, y no se adquieren pidiéndoselas a un modelo. La segunda es dónde usarla sin reservas: en la automatización de tareas repetitivas y en la generación de código base, donde el costo del error es bajo y reversible, y como punto de partida para explorar una tecnología desconocida o abrir una investigación. Punto de partida, sin embargo, no significa fuente. Un modelo puede producir explicaciones y referencias formuladas con total seguridad y a la vez inexactas, de modo que lo que entrega sirve para orientar la búsqueda y debe contrastarse contra el material original.
+          </p>
+          <p class="seccion__texto">
+            La tercera decisión es cómo usarla cuando el código generado va a permanecer en el proyecto, y es la que consideramos menos atendida. Proponemos que toda generación de código venga acompañada de una metodología de revisión y un registro explícito: qué se le pidió al modelo, qué fragmentos se aceptaron sin modificar, cuáles se corrigieron y qué se verificó en cada caso. El objetivo no es burocratizar el trabajo, sino que en cualquier momento posterior sea posible distinguir el código que alguien revisó del que únicamente pasó las pruebas. Sin ese registro, la deuda técnica descrita en la sección 4.2 permanece invisible hasta que falla, que es justamente cuando ya no se corrige barato.
+          </p>
+          <p class="seccion__texto">
+            Nuestra postura, entonces, no es la de rechazar estas herramientas. Satanizar la inteligencia artificial en el desarrollo de software sería tan improductivo como adoptarla sin condiciones, y ninguna de las dos posiciones se sostiene con la evidencia revisada. La cautela que proponemos no recae sobre la herramienta, sino sobre la relación que se establece con ella: sirve para agilizar el desarrollo, no para reemplazar la comprensión de lo que se construye. La diferencia entre un ingeniero que usa inteligencia artificial y uno que depende de ella no está en cuánto código genera cada uno, sino en si puede responder por el que entrega.
+          </p>
+        </section>
+
+        <section class="seccion">
+          <h3 class="seccion__titulo">6. Referencias</h3>
+          <ol class="referencias">
+            <li>
+              Fan, G., Liu, D., Zhang, R. et al. (2025). The impact of AI-assisted pair
+              programming on student motivation, programming anxiety, collaborative learning,
+              and programming performance: a comparative study with traditional pair
+              programming and individual approaches. <em>International Journal of STEM
+              Education, 12</em>, 16. https://doi.org/10.1186/s40594-025-00537-3
+            </li>
+            <li>
+              Georgia Institute of Technology. (2025). <em>Vibe Security Radar</em>.
+              [VERIFICAR: falta enlace y datos completos de publicación.]
+            </li>
+            <li>
+              GitHub. (2024). <em>Quantifying the impact of AI on developer
+              productivity</em>. GitHub Blog. [VERIFICAR: falta URL.]
+            </li>
+            <li>
+              IBM / Cloud Security Alliance. (2026). <em>Risks of AI-generated code</em>.
+              [VERIFICAR: son dos organizaciones distintas; confirmar cuál publicó el
+              informe y agregar enlace.]
+            </li>
+            <li>
+              Karpathy, A. (2025). <em>There's a new kind of coding I call "vibe
+              coding"</em>. X. https://x.com/karpathy/status/1886192184808149383
+            </li>
+            <li>
+              Stack Overflow. (2025). <em>Annual Developer Survey</em>. Stack Overflow.
+              [VERIFICAR: falta URL.]
+            </li>
+            <li>
+              Veracode. (2025). <em>AI Code Security Report</em>. [VERIFICAR: falta URL y
+              título exacto del informe.]
+            </li>
+          </ol>
+        </section>
+
+      </div>
+
+    </article>
+
+  </main>
+
+  <footer>
+    Proyecto de Investigación Web · Programación Web I · Ingeniería en Sistemas
+  </footer>
+
+</body>
+</html>
